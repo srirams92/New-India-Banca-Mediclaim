@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New India Banca Mediclaim Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar for aesthetic */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Smooth transitions */
+        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 300ms; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-blue-900 text-white shadow-md sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">New India Banca Mediclaim Calculator</h1>
+            <p class="text-blue-200 text-sm hidden sm:block">Instant Quote & Benefit Guide</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 flex-grow">
+        
+        <div class="lg:col-span-5 space-y-6">
+            
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-lg font-semibold text-slate-800 mb-4 border-b pb-2">Policy Configuration</h2>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Policy Type</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="policyType" value="floater" checked class="peer sr-only">
+                                <div class="text-center py-2 px-3 border border-slate-300 rounded-md text-sm peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 hover:bg-slate-50 transition-all">Floater</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="policyType" value="individual" class="peer sr-only">
+                                <div class="text-center py-2 px-3 border border-slate-300 rounded-md text-sm peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 hover:bg-slate-50 transition-all">Individual</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Geographic Zone</label>
+                        <select id="zone" class="w-full rounded-md border-slate-300 shadow-sm border p-2.5 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm cursor-pointer">
+                            <option value="zone1">Zone 1 (Delhi/NCR, Mumbai, Surat, Ahmedabad, etc.)</option>
+                            <option value="zone2">Zone 2 (Rest of India)</option>
+                        </select>
+                    </div>
+
+                    <div id="globalSiContainer">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Family Sum Insured (₹)</label>
+                        <select id="sumInsured" class="w-full rounded-md border-slate-300 shadow-sm border p-2.5 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm cursor-pointer">
+                            <option value="500000">₹ 5,00,000</option>
+                            <option value="1000000">₹ 10,00,000</option>
+                            <option value="1500000">₹ 15,00,000</option>
+                            <option value="2500000">₹ 25,00,000</option>
+                            <option value="5000000">₹ 50,00,000</option>
+                            <option value="7500000">₹ 75,00,000</option>
+                            <option value="10000000">₹ 1,00,00,000 (1 Crore)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Policy Term</label>
+                        <select id="term" class="w-full rounded-md border-slate-300 shadow-sm border p-2.5 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm cursor-pointer">
+                            <option value="1">1 Year (0% discount)</option>
+                            <option value="2">2 Years (5% discount)</option>
+                            <option value="3">3 Years (7% discount)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Plan Variant</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="plan" value="basic" checked class="peer sr-only">
+                                <div class="text-center py-2 px-3 border border-slate-300 rounded-md text-sm font-medium peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 hover:bg-slate-50 transition-all">Base</div>
+                            </label>
+                            <label class="cursor-pointer" id="label-gold">
+                                <input type="radio" name="plan" value="gold" id="radio-gold" class="peer sr-only">
+                                <div class="text-center py-2 px-3 border border-slate-300 rounded-md text-sm font-medium peer-checked:bg-yellow-500 peer-checked:text-white peer-checked:border-yellow-500 hover:bg-slate-50 transition-all" id="ui-gold">Gold</div>
+                            </label>
+                            <label class="cursor-pointer" id="label-platinum">
+                                <input type="radio" name="plan" value="platinum" id="radio-platinum" class="peer sr-only">
+                                <div class="text-center py-2 px-3 border border-slate-300 rounded-md text-sm font-medium peer-checked:bg-slate-800 peer-checked:text-white peer-checked:border-slate-800 hover:bg-slate-50 transition-all" id="ui-platinum">Platinum</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h2 class="text-lg font-semibold text-slate-800">Family Members</h2>
+                    <span class="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded">Max 4 Members</span>
+                </div>
+
+                <div id="membersContainer" class="space-y-4">
+                    </div>
+
+                <button id="addMemberBtn" class="mt-5 w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 px-4 rounded border border-slate-300 transition-colors flex justify-center items-center gap-2 text-sm shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                    Add Family Member
+                </button>
+
+                <div id="validationNotices" class="mt-4 space-y-2"></div>
+            </div>
+
+        </div>
+
+        <div class="lg:col-span-7 space-y-6 flex flex-col h-full">
+            
+            <div class="bg-white rounded-xl shadow-lg border border-slate-200 relative">
+                
+                <div class="bg-gradient-to-br from-blue-900 to-blue-800 text-white p-6 rounded-t-xl relative">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl"></div>
+                    
+                    <div class="flex justify-between items-start mb-4 border-b border-blue-700 pb-3">
+                        <h2 class="text-2xl font-bold tracking-wide z-10 relative">Quote Summary</h2>
+                        <div class="text-right text-sm text-blue-200 z-10 relative">
+                            <p id="summaryPolicyType" class="uppercase tracking-wide font-bold text-blue-100 mb-0.5">Floater Policy</p>
+                            <p id="summaryZonePlan">Zone 1 | Base Plan</p>
+                        </div>
+                    </div>
+                    
+                    <div id="quoteBreakdown" class="text-base space-y-2 mb-4 relative z-10">
+                        </div>
+
+                    <div class="border-t border-blue-700 pt-4 mt-5 space-y-2 relative z-10">
+                        <div class="flex justify-between items-center text-blue-200 font-medium">
+                            <p>Final Premium (for <span id="summaryTerm">1</span> yr)</p>
+                            <p class="text-xl font-bold" id="finalPremium">₹ 0</p>
+                        </div>
+                        <div class="flex justify-between items-center text-blue-300 font-medium">
+                            <p>GST (18%)</p>
+                            <p id="gstAmount">₹ 0</p>
+                        </div>
+                        <div class="flex justify-between items-end pt-3 mt-3 border-t border-blue-700/50">
+                            <p class="text-blue-100 font-semibold pb-1 text-lg">Total Payable</p>
+                            <p class="text-5xl font-extrabold tracking-tight text-white" id="totalPayable">₹ 0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white px-6 py-5 border-b border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-800">Dynamic Benefits Guide</h2>
+                    <p class="text-sm text-slate-500 mt-1" id="dynamicGuideSubtext">Limits shown based on selected parameters.</p>
+                </div>
+                
+                <div class="p-6 space-y-6 rounded-b-xl" id="benefitsContainer">
+                    </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-100 border-t border-slate-200 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-500">
+            Disclaimer: This calculator is user-generated and should be used for informational purposes only. Refer to the official policy wordings for definitive terms.
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. PREMIUM DATA MATRICES ---
+        const premiumData = {
+            zone1: {
+                basic: {
+                    500000: [3637, 5180, 6265, 7905, 10402, 12454, 16054, 18120, 24539, 27751],
+                    1000000: [4460, 6363, 7709, 9738, 12819, 15353, 19803, 22356, 30285, 34254],
+                    1500000: [5549, 7933, 9616, 12160, 16017, 19191, 24763, 27957, 37891, 42860],
+                    2500000: [7457, 10687, 12964, 16400, 21622, 25918, 33454, 37779, 51215, 57937],
+                    5000000: [10364, 14876, 18060, 22861, 30163, 36166, 46699, 52739, 71523, 80915],
+                    7500000: [11720, 16830, 20434, 25871, 34142, 40939, 52865, 59709, 80980, 91621],
+                    10000000: [12679, 18214, 22122, 28008, 36965, 44324, 57245, 64655, 87694, 99218]
+                },
+                gold: {
+                    500000: [4282, 6087, 7195, 8878, 12118, 14067, 17760, 19607, 26194, 29471],
+                    1000000: [5086, 7452, 8826, 10907, 14689, 17111, 21673, 23997, 32127, 36170],
+                    1500000: [6213, 9289, 11005, 13609, 18190, 21239, 26947, 29878, 40060, 45128],
+                    2500000: [8443, 12828, 15142, 18653, 24955, 29036, 36755, 40649, 54417, 61271],
+                    5000000: [11846, 18466, 21697, 26587, 35530, 41131, 51907, 57199, 76436, 86011],
+                    7500000: [13399, 20893, 24548, 30088, 40214, 46558, 58760, 64758, 86544, 97394],
+                    10000000: [14493, 22613, 26573, 32571, 43543, 50411, 63627, 70125, 93715, 105468]
+                },
+                platinum: {
+                    500000: [4366, 7891, 8990, 10664, 13899, 15638, 19326, 20832, 27414, 30691],
+                    1000000: [5161, 9126, 10491, 12557, 16330, 18555, 23113, 25119, 33249, 37292],
+                    1500000: [6293, 10991, 12688, 15283, 19850, 22702, 28401, 31009, 41191, 46259],
+                    2500000: [8551, 14703, 16998, 20495, 26778, 30640, 38354, 41893, 55656, 62509],
+                    5000000: [11968, 20425, 23632, 28503, 37428, 42800, 53566, 58489, 77722, 87296],
+                    7500000: [13534, 23104, 26736, 32258, 42360, 48447, 60639, 66221, 88002, 98848],
+                    10000000: [14642, 25007, 28943, 34918, 45866, 52454, 65660, 71705, 95291, 107043]
+                }
+            },
+            zone2: {
+                basic: {
+                    500000: [2976, 4238, 5126, 6468, 8511, 10190, 13135, 14826, 20077, 22705],
+                    1000000: [3649, 5206, 6307, 7967, 10488, 12561, 16203, 18291, 24778, 28026],
+                    1500000: [4540, 6491, 7868, 9949, 13104, 15702, 20261, 22874, 31002, 35068],
+                    2500000: [6101, 8744, 10607, 13418, 17691, 21206, 27372, 30910, 41903, 47403],
+                    5000000: [8480, 12171, 14776, 18704, 24679, 29590, 38208, 43150, 58519, 66203],
+                    7500000: [9589, 13770, 16719, 21168, 27934, 33496, 43253, 48853, 66257, 74962],
+                    10000000: [10373, 14902, 18100, 22916, 30244, 36265, 46837, 52900, 71749, 81178]
+                },
+                gold: {
+                    500000: [3504, 4980, 5887, 7264, 9914, 11509, 14531, 16042, 21431, 24113],
+                    1000000: [4162, 6097, 7222, 8924, 12018, 14000, 17733, 19634, 26285, 29594],
+                    1500000: [5083, 7600, 9004, 11135, 14883, 17377, 22047, 24446, 32776, 36923],
+                    2500000: [6908, 10496, 12389, 15262, 20418, 23757, 30072, 33258, 44523, 50130],
+                    5000000: [9693, 15109, 17752, 21753, 29070, 33652, 42469, 46799, 62539, 70372],
+                    7500000: [10962, 17094, 20085, 24618, 32903, 38093, 48076, 52984, 70808, 79686],
+                    10000000: [11858, 18502, 21741, 26649, 35626, 41245, 52058, 57375, 76676, 86292]
+                },
+                platinum: {
+                    500000: [3573, 6457, 7355, 8725, 11372, 12795, 15813, 17044, 22430, 25111],
+                    1000000: [4223, 7466, 8583, 10274, 13361, 15181, 18911, 20552, 27203, 30512],
+                    1500000: [5148, 8993, 10381, 12504, 16241, 18574, 23237, 25371, 33702, 37848],
+                    2500000: [6996, 12030, 13908, 16769, 21910, 25069, 31380, 34276, 45537, 51144],
+                    5000000: [9792, 16711, 19335, 23321, 30623, 35018, 43827, 47855, 63591, 71424],
+                    7500000: [11073, 18903, 21875, 26393, 34658, 39638, 49614, 54181, 72002, 80876],
+                    10000000: [11980, 20460, 23681, 28569, 37527, 42917, 53722, 58668, 77965, 87581]
+                }
+            }
+        };
+
+        const siOptionsHtml = `
+            <option value="500000">₹ 5 L</option>
+            <option value="1000000">₹ 10 L</option>
+            <option value="1500000">₹ 15 L</option>
+            <option value="2500000">₹ 25 L</option>
+            <option value="5000000">₹ 50 L</option>
+            <option value="7500000">₹ 75 L</option>
+            <option value="10000000">₹ 1 Cr</option>
+        `;
+
+        // --- 2. STATE MANAGEMENT & DOM ELEMENTS ---
+        const state = {
+            members: [{ id: 1, role: 'Self', age: 30, si: "500000" }],
+            memberRoles: ['Self', 'Spouse', 'Dependent Child 1', 'Dependent Child 2'],
+            maxMembers: 4,
+            policyType: 'floater'
+        };
+
+        const DOM = {
+            policyTypeRadios: document.getElementsByName('policyType'),
+            zone: document.getElementById('zone'),
+            globalSiContainer: document.getElementById('globalSiContainer'),
+            sumInsured: document.getElementById('sumInsured'),
+            term: document.getElementById('term'),
+            planRadios: document.getElementsByName('plan'),
+            membersContainer: document.getElementById('membersContainer'),
+            addMemberBtn: document.getElementById('addMemberBtn'),
+            validationNotices: document.getElementById('validationNotices'),
+            quoteBreakdown: document.getElementById('quoteBreakdown'),
+            finalPremium: document.getElementById('finalPremium'),
+            gstAmount: document.getElementById('gstAmount'),
+            totalPayable: document.getElementById('totalPayable'),
+            summaryTerm: document.getElementById('summaryTerm'),
+            summaryPolicyType: document.getElementById('summaryPolicyType'),
+            summaryZonePlan: document.getElementById('summaryZonePlan'),
+            dynamicGuideSubtext: document.getElementById('dynamicGuideSubtext'),
+            benefitsContainer: document.getElementById('benefitsContainer'),
+            radioGold: document.getElementById('radio-gold'),
+            radioPlatinum: document.getElementById('radio-platinum'),
+            uiGold: document.getElementById('ui-gold'),
+            uiPlatinum: document.getElementById('ui-platinum')
+        };
+
+        // --- 3. HELPER FUNCTIONS ---
+        const formatINR = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(num);
+
+        const getAgeIndex = (age) => {
+            if (age >= 0 && age <= 17) return 0;
+            if (age >= 18 && age <= 30) return 1;
+            if (age >= 31 && age <= 35) return 2;
+            if (age >= 36 && age <= 40) return 3;
+            if (age >= 41 && age <= 45) return 4;
+            if (age >= 46 && age <= 50) return 5;
+            if (age >= 51 && age <= 55) return 6;
+            if (age >= 56 && age <= 60) return 7;
+            if (age >= 61 && age <= 65) return 8;
+            return 9; // 66-70 and base for > 70
+        };
+
+        const getActivePlan = () => Array.from(DOM.planRadios).find(r => r.checked).value;
+        const getActivePolicyType = () => Array.from(DOM.policyTypeRadios).find(r => r.checked).value;
+
+        // --- 4. RENDER MEMBERS UI ---
+        function renderMembers() {
+            state.policyType = getActivePolicyType();
+            
+            // Toggle Global SI visibility
+            DOM.globalSiContainer.style.display = state.policyType === 'floater' ? 'block' : 'none';
+
+            // Flex layout redesigned for maximum breathing room for all elements
+            DOM.membersContainer.innerHTML = state.members.map((m, index) => `
+                <div class="flex flex-wrap items-center gap-3 p-4 bg-slate-50 border border-slate-200 shadow-sm rounded-lg">
+                    
+                    <div class="flex-1 min-w-[160px]">
+                        <select onchange="updateMember(${m.id}, 'role', this.value)" class="w-full bg-white border border-slate-300 rounded-md p-2.5 text-sm font-semibold focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-800 transition-colors cursor-pointer">
+                            ${state.memberRoles.map(role => `<option value="${role}" ${m.role === role ? 'selected' : ''}>${role}</option>`).join('')}
+                        </select>
+                    </div>
+                    
+                    ${state.policyType === 'individual' ? `
+                    <div class="flex-1 min-w-[130px]">
+                        <select onchange="updateMember(${m.id}, 'si', this.value)" class="w-full bg-white border border-slate-300 rounded-md p-2.5 text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors cursor-pointer">
+                            ${siOptionsHtml.replace(`value="${m.si}"`, `value="${m.si}" selected`)}
+                        </select>
+                    </div>
+                    ` : ''}
+
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <div class="flex items-center border border-slate-300 rounded-md bg-white overflow-hidden w-28 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
+                            <input type="number" min="0" max="100" value="${m.age}" onchange="updateMember(${m.id}, 'age', this.value)" class="w-[60%] p-2.5 text-center text-sm font-bold focus:outline-none focus:bg-blue-50 text-slate-800 placeholder-slate-400" placeholder="Age">
+                            <div class="w-[40%] bg-slate-100 border-l border-slate-300 py-2.5 flex items-center justify-center">
+                                <span class="text-xs text-slate-600 font-bold">Yrs</span>
+                            </div>
+                        </div>
+                        
+                        ${index > 0 ? `
+                        <button onclick="removeMember(${m.id})" class="text-slate-400 hover:text-red-600 p-2.5 rounded-md hover:bg-red-50 border border-transparent hover:border-red-200 transition-all flex-shrink-0" title="Remove Member">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>` 
+                        : '<div class="w-[42px]"></div>'}
+                    </div>
+                </div>
+            `).join('');
+
+            DOM.addMemberBtn.style.display = state.members.length >= state.maxMembers ? 'none' : 'flex';
+            calculateQuote();
+        }
+
+        window.updateMember = (id, field, value) => {
+            const member = state.members.find(m => m.id === id);
+            if (field === 'age') member.age = parseInt(value) || 0;
+            if (field === 'role') member.role = value;
+            if (field === 'si') member.si = value;
+            calculateQuote();
+        };
+
+        window.removeMember = (id) => {
+            state.members = state.members.filter(m => m.id !== id);
+            renderMembers();
+        };
+
+        DOM.addMemberBtn.addEventListener('click', () => {
+            if (state.members.length < state.maxMembers) {
+                const nextRole = state.memberRoles.find(r => !state.members.some(m => m.role === r)) || 'Spouse';
+                state.members.push({ id: Date.now(), role: nextRole, age: 30, si: DOM.sumInsured.value });
+                renderMembers();
+            }
+        });
+
+        // --- 5. CORE LOGIC & CALCULATIONS ---
+        function calculateQuote() {
+            state.policyType = getActivePolicyType();
+            const zone = DOM.zone.value;
+            let plan = getActivePlan();
+            const globalSi = DOM.sumInsured.value;
+            const term = parseInt(DOM.term.value);
+            
+            let notices = [];
+            DOM.validationNotices.innerHTML = '';
+
+            // Update Summary Header
+            DOM.summaryPolicyType.innerText = state.policyType === 'floater' ? 'Floater Policy' : 'Individual Policy';
+            DOM.summaryZonePlan.innerText = `${zone === 'zone1' ? 'Zone 1' : 'Zone 2'} | ${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`;
+
+            // Guardrail 1: Age > 60 forces Basic Plan
+            const hasElderly = state.members.some(m => m.age > 60);
+            if (hasElderly) {
+                DOM.radioGold.disabled = true;
+                DOM.radioPlatinum.disabled = true;
+                DOM.uiGold.classList.add('opacity-40', 'cursor-not-allowed');
+                DOM.uiPlatinum.classList.add('opacity-40', 'cursor-not-allowed');
+                
+                if (plan !== 'basic') {
+                    DOM.planRadios[0].checked = true; // Force Basic
+                    plan = 'basic';
+                    notices.push(`<div class="p-3 bg-yellow-50 text-yellow-800 text-sm font-medium rounded-lg border border-yellow-200 flex gap-2"><svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> Note: Age > 60 detected. Plan restricted strictly to Base variant.</div>`);
+                }
+            } else {
+                DOM.radioGold.disabled = false;
+                DOM.radioPlatinum.disabled = false;
+                DOM.uiGold.classList.remove('opacity-40', 'cursor-not-allowed');
+                DOM.uiPlatinum.classList.remove('opacity-40', 'cursor-not-allowed');
+            }
+
+            // Guardrail 2: Platinum Minimum 2 Adults Rule
+            const adultsCount = state.members.filter(m => m.age >= 18).length;
+            if (plan === 'platinum' && adultsCount < 2) {
+                notices.push(`<div class="p-3 bg-red-50 text-red-800 text-sm font-medium rounded-lg border border-red-200 flex gap-2"><svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> Platinum Plan requires a minimum of 2 Adults (Age 18+). Please add members or select another plan.</div>`);
+            }
+
+            if(notices.length > 0) {
+                DOM.validationNotices.innerHTML = notices.join('');
+            }
+
+            // --- Calculations ---
+            let totalBasePremium = 0;
+            let memberBreakdownHtml = '';
+
+            state.members.forEach(m => {
+                const memberSi = state.policyType === 'individual' ? m.si : globalSi;
+                const baseArray = premiumData[zone][plan][memberSi];
+                const ageIndex = getAgeIndex(m.age);
+                
+                let basePremium = baseArray[ageIndex];
+                let loadingAmount = 0;
+
+                // Guardrail 3: Age > 70 Loading (2.5% simple loading per year above 70 based on age 70 premium)
+                if (m.age > 70) {
+                    const extraYears = m.age - 70;
+                    loadingAmount = (extraYears * 0.025 * basePremium);
+                }
+
+                let memberTotal = basePremium + loadingAmount;
+                totalBasePremium += memberTotal;
+
+                const displaySiLakhs = (memberSi / 100000) + 'L';
+                
+                memberBreakdownHtml += `
+                    <div class="flex justify-between items-center text-blue-100 text-[15px] py-2 border-b border-blue-800/50 last:border-0">
+                        <div>
+                            <span class="font-bold">${m.role}</span>
+                            <span class="text-xs text-blue-300 ml-1">(${m.age} yrs) ${state.policyType === 'individual' ? `| SI: ₹${displaySiLakhs}` : ''}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold">${formatINR(memberTotal)}</span>
+                            ${loadingAmount > 0 ? `<br><span class="text-[11px] font-medium text-yellow-300">Base: ${formatINR(basePremium)} + Load: ${formatINR(loadingAmount)}</span>` : ''}
+                        </div>
+                    </div>`;
+            });
+
+            // Member Discount
+            let memDiscountPct = 0;
+            if (state.members.length === 2) memDiscountPct = 0.05;
+            else if (state.members.length === 3) memDiscountPct = 0.10;
+            else if (state.members.length >= 4) memDiscountPct = 0.15;
+            
+            let memDiscountAmount = totalBasePremium * memDiscountPct;
+            let postMemDiscount = totalBasePremium - memDiscountAmount;
+
+            // Annualized total before Term Discount
+            let annualizedPremium = postMemDiscount * term;
+
+            // Term Discount
+            let termDiscountPct = 0;
+            if (term === 2) termDiscountPct = 0.05;
+            else if (term === 3) termDiscountPct = 0.07;
+            
+            let termDiscountAmount = annualizedPremium * termDiscountPct;
+
+            // Final Computations
+            let finalPremium = annualizedPremium - termDiscountAmount;
+            let finalPremiumRounded = Math.round(finalPremium);
+            let gstRounded = Math.round(finalPremiumRounded * 0.18);
+            let totalRounded = finalPremiumRounded + gstRounded;
+
+            // Render Quote Breakdown
+            DOM.quoteBreakdown.innerHTML = `
+                <div class="mb-4 bg-blue-950/40 rounded-lg p-3">
+                    <p class="text-xs font-bold text-blue-300 uppercase tracking-wider mb-2">Member Premiums (1 Yr)</p>
+                    ${memberBreakdownHtml}
+                    <div class="flex justify-between font-bold text-[15px] pt-3 mt-1 border-t border-blue-700/50">
+                        <span>Base Total</span>
+                        <span>${formatINR(totalBasePremium)}</span>
+                    </div>
+                </div>
+                
+                ${memDiscountAmount > 0 ? `
+                <div class="flex justify-between items-center bg-blue-900/60 px-3 py-2 rounded-lg mb-2">
+                    <span class="text-blue-200 font-medium">Family Discount (${memDiscountPct * 100}%)</span>
+                    <span class="font-bold text-green-300">-${formatINR(memDiscountAmount)}</span>
+                </div>` : ''}
+
+                ${term > 1 ? `
+                <div class="flex justify-between items-center bg-blue-900/60 px-3 py-2 rounded-lg mb-2">
+                    <span class="text-blue-200 font-medium">Multi-Year Total (${term} Yrs)</span>
+                    <span class="font-bold">${formatINR(annualizedPremium)}</span>
+                </div>
+                <div class="flex justify-between items-center bg-blue-900/60 px-3 py-2 rounded-lg mb-2">
+                    <span class="text-blue-200 font-medium">Term Discount (${termDiscountPct * 100}%)</span>
+                    <span class="font-bold text-green-300">-${formatINR(termDiscountAmount)}</span>
+                </div>` : ''}
+            `;
+            
+            // Handle Invalid Configs visually in summary
+            if (plan === 'platinum' && adultsCount < 2) {
+                DOM.finalPremium.innerText = "Invalid Config";
+                DOM.finalPremium.classList.add('text-red-300');
+                DOM.gstAmount.innerText = "-";
+                DOM.totalPayable.innerText = "Invalid Config";
+                DOM.totalPayable.classList.add('text-red-300', 'text-2xl');
+                DOM.totalPayable.classList.remove('text-5xl', 'text-white');
+            } else {
+                DOM.finalPremium.innerText = formatINR(finalPremiumRounded);
+                DOM.finalPremium.classList.remove('text-red-300');
+                DOM.gstAmount.innerText = formatINR(gstRounded);
+                DOM.totalPayable.innerText = formatINR(totalRounded);
+                DOM.totalPayable.classList.remove('text-red-300', 'text-2xl');
+                DOM.totalPayable.classList.add('text-5xl', 'text-white');
+            }
+
+            DOM.summaryTerm.innerText = term;
+            
+            // Pass the primary/highest SI to the benefits guide for illustrative purposes
+            const referenceSi = state.policyType === 'floater' ? globalSi : Math.max(...state.members.map(m => parseInt(m.si)));
+            updateBenefitsUI(parseInt(referenceSi), plan, state.policyType);
+        }
+
+        // --- 6. BENEFITS ENGINE ---
+        function updateBenefitsUI(si, plan, type) {
+            
+            let subtext = `Limits shown based on ₹ ${new Intl.NumberFormat('en-IN').format(si)} Sum Insured under <span class="capitalize font-bold text-blue-600">${plan}</span> Plan.`;
+            if(type === 'individual') {
+                subtext += ` <br><span class="text-blue-600 font-medium">(Note: In Individual policies, specific limits apply per member's selected SI).</span>`;
+            }
+            DOM.dynamicGuideSubtext.innerHTML = subtext;
+
+            // Compute dynamic values
+            const roomLimit = si <= 1500000 ? "Single AC Room" : "Deluxe AC Room";
+            const hospCash = si <= 1500000 ? "₹ 500/day" : (si === 2500000 ? "₹ 750/day" : (si === 5000000 ? "₹ 1,000/day" : (si === 7500000 ? "₹ 1,500/day" : "₹ 2,000/day")));
+            const ambulance = si <= 1500000 ? "₹ 5,000" : (si === 2500000 ? "₹ 7,500" : (si === 5000000 ? "₹ 10,000" : (si === 7500000 ? "₹ 15,000" : "₹ 20,000")));
+            const cataract = si <= 1500000 ? "₹ 50,000" : (si === 2500000 ? "₹ 75,000" : (si === 5000000 ? "₹ 1,00,000" : (si === 7500000 ? "₹ 1,25,000" : "₹ 1,50,000")));
+            const hazardous = si <= 1500000 ? "₹ 1,00,000" : (si === 2500000 ? "₹ 1,50,000" : (si === 5000000 ? "₹ 2,00,000" : (si === 7500000 ? "₹ 2,50,000" : "₹ 3,00,000")));
+            const healthCheck = si <= 1500000 ? "₹ 3,500" : (si === 2500000 ? "₹ 5,000" : (si === 5000000 ? "₹ 7,000" : (si === 7500000 ? "₹ 8,000" : "₹ 10,000")));
+            const secondOp = si <= 1500000 ? "₹ 5,000" : (si === 2500000 ? "₹ 7,500" : (si === 5000000 ? "₹ 10,000" : (si === 7500000 ? "₹ 15,000" : "₹ 20,000")));
+            
+            // Base Block
+            let html = `
+                <div class="mb-6">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Base Coverages</h3>
+                    <ul class="space-y-3.5 text-[15px]">
+                        <li class="flex items-start"><svg class="h-5 w-5 text-green-500 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><div><span class="font-bold text-slate-800">Room Rent Limit:</span> ${roomLimit}</div></li>
+                        <li class="flex items-start"><svg class="h-5 w-5 text-green-500 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><div><span class="font-bold text-slate-800">Hospital Cash (Max 5 days):</span> ${hospCash}</div></li>
+                        <li class="flex items-start"><svg class="h-5 w-5 text-green-500 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><div><span class="font-bold text-slate-800">Road Ambulance Limit:</span> Max ${ambulance}</div></li>
+                        <li class="flex items-start"><svg class="h-5 w-5 text-green-500 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><div><span class="font-bold text-slate-800">Cataract (Per eye):</span> Max ${cataract}</div></li>
+                        <li class="flex items-start"><svg class="h-5 w-5 text-green-500 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><div><span class="font-bold text-slate-800">Hazardous Sports:</span> Max ${hazardous}</div></li>
+                        <li class="flex items-start"><svg class="h-5 w-5 text-green-500 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><div><span class="font-bold text-slate-800">Preventive Health Check-up:</span> Max ${healthCheck} (Every 2 claim-free years)</div></li>
+                        <li class="flex items-start"><svg class="h-5 w-5 text-green-500 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><div><span class="font-bold text-slate-800">Medical Second Opinion:</span> Max ${secondOp}</div></li>
+                    </ul>
+                </div>
+            `;
+
+            // Gold Block
+            if (plan === 'gold' || plan === 'platinum') {
+                const criticalCare = si <= 1500000 ? "₹ 1,00,000" : (si === 2500000 ? "₹ 1,50,000" : (si === 5000000 ? "₹ 2,50,000" : (si === 7500000 ? "₹ 5,00,000" : "₹ 10,00,000")));
+                const airAmbulance = si <= 1500000 ? "₹ 50,000" : (si === 2500000 ? "₹ 75,000" : (si === 5000000 ? "₹ 1,00,000" : (si === 7500000 ? "₹ 1,50,000" : "₹ 2,00,000")));
+                
+                html += `
+                    <div class="pt-2 mb-6">
+                        <h3 class="text-sm font-bold text-yellow-600 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Gold Features</h3>
+                        <ul class="space-y-3.5 text-[15px]">
+                            <li class="flex items-start"><svg class="h-5 w-5 text-yellow-500 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><div><span class="font-bold text-slate-800">Critical Care Benefit:</span> Lump sum ${criticalCare}</div></li>
+                            <li class="flex items-start"><svg class="h-5 w-5 text-yellow-500 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><div><span class="font-bold text-slate-800">Air Ambulance Charges:</span> Max ${airAmbulance}</div></li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Platinum Block
+            if (plan === 'platinum') {
+                const matSingle = si <= 5000000 ? "₹ 25,000" : (si === 7500000 ? "₹ 37,500" : "₹ 50,000");
+                const matTwins = si <= 5000000 ? "₹ 37,500" : (si === 7500000 ? "₹ 50,000" : "₹ 62,500");
+                const infertility = si <= 1500000 ? "₹ 50,000" : (si === 2500000 ? "₹ 75,000" : (si === 5000000 ? "₹ 1,00,000" : (si === 7500000 ? "₹ 1,50,000" : "₹ 2,00,000")));
+                const wellBaby = si <= 1500000 ? "₹ 30,000" : (si === 2500000 ? "₹ 40,000" : (si === 5000000 ? "₹ 50,000" : (si === 7500000 ? "₹ 75,000" : "₹ 1,00,000")));
+                const birthRight = si <= 1500000 ? "₹ 30,000" : (si === 2500000 ? "₹ 40,000" : (si === 5000000 ? "₹ 50,000" : (si === 7500000 ? "₹ 75,000" : "₹ 1,00,000")));
+                
+                html += `
+                    <div class="pt-2">
+                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Platinum Features</h3>
+                        <ul class="space-y-3.5 text-[15px]">
+                            <li class="flex items-start"><svg class="h-5 w-5 text-slate-700 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><div><span class="font-bold text-slate-800">Maternity Coverage:</span> ${matSingle} (Single) / ${matTwins} (Twins)</div></li>
+                            <li class="flex items-start"><svg class="h-5 w-5 text-slate-700 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><div><span class="font-bold text-slate-800">Infertility Treatment:</span> Max ${infertility} (Lifetime)</div></li>
+                            <li class="flex items-start"><svg class="h-5 w-5 text-slate-700 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><div><span class="font-bold text-slate-800">Well Baby Cover (Pre-term):</span> Max ${wellBaby}</div></li>
+                            <li class="flex items-start"><svg class="h-5 w-5 text-slate-700 mr-2.5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><div><span class="font-bold text-slate-800">Birth Right Benefit:</span> Lump sum ${birthRight}</div></li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            DOM.benefitsContainer.innerHTML = html;
+        }
+
+        // --- 7. EVENT LISTENERS & INIT ---
+        DOM.policyTypeRadios.forEach(el => el.addEventListener('change', renderMembers));
+        [DOM.zone, DOM.sumInsured, DOM.term].forEach(el => el.addEventListener('change', calculateQuote));
+        DOM.planRadios.forEach(el => el.addEventListener('change', calculateQuote));
+
+        // Initial Render
+        renderMembers();
+    </script>
+</body>
+</html>
